@@ -1,77 +1,80 @@
-# Telemed Chatbot
+# 🩺 Telemed-AI: Privacy-First Medical RAG Assistant
 
-A symptom chatbot built with **GraphRAG** on **MedlinePlus** health topics.
-Describe symptoms → hybrid retrieval (knowledge graph + vector search) → local LLM via Ollama → possible conditions, typical care, red flags, sources.
+![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-Local_LLM-black)
 
-> ⚠️ **Student learning project.** Always consult a doctor for real health concerns.
+Telemed-AI is an end-to-end, locally hosted medical chatbot designed to provide context-aware health information while strictly preserving user privacy. It utilizes a Retrieval-Augmented Generation (RAG) architecture powered by a local vector database and a local LLM, ensuring that sensitive medical queries never leave the user's machine.
 
-📖 **Read [GUIDE.md](./GUIDE.md) first.** That is your e-guide for the project — concepts, architecture, phased plan, mermaid diagrams.
+## ✨ Key Features
+* **100% Local Execution:** Powered by Ollama (Llama 3.2), completely eliminating cloud data privacy risks.
+* **Knowledge Graph Integration:** Automatically extracts medical entities (symptoms, conditions) to ground the AI's reasoning.
+* **Source Citation:** Retrieves and links directly to trusted medical literature (MedlinePlus) for every response.
+* **Safety Guardrails:** Programmed to identify red flags and consistently recommend professional medical consultation.
+* **Interactive UI:** Clean, responsive chat interface built with Streamlit.
 
-## Quickstart
+## 🏗️ Architecture
+1. **Frontend:** Streamlit (`app.py`) for the user interface and chat memory.
+2. **Backend API:** FastAPI application handling HTTP requests and orchestration.
+3. **Database:** ChromaDB storing chunked MedlinePlus XML data with Nomic embeddings.
+4. **LLM Engine:** Ollama running `llama3.2` locally for inference.
+
+---
+
+## 📸 Interface Preview
+*(Drag and drop your Streamlit screenshots here!)*
+
+[Insert Screenshot 1: The chat interface answering a question]
+[Insert Screenshot 2: The expanded dropdowns showing Candidate Conditions and Sources]
+
+---
+
+## 🚀 Local Installation & Setup
+
+### 1. Prerequisites
+* Python 3.10+
+* [Ollama](https://ollama.com/) installed locally.
+
+### 2. Install Local AI Models
+Open your terminal and pull the required models into Ollama:
+```bash
+ollama pull nomic-embed-text
+ollama pull llama3.2
+
+### 3. Clone and Environment Setup
 
 ```bash
-# 1. Install Ollama (https://ollama.com/) and pull models
-ollama pull llama3.1:8b
-ollama pull nomic-embed-text
+# Clone the repository
+git clone [https://github.com/lilianvivian/Telemed-AI.git](https://github.com/lilianvivian/Telemed-AI.git)
+cd Telemed-AI
 
-# 2. Download MedlinePlus XML (https://medlineplus.gov/xml.html)
-#    Place it in data/raw/
+# Create a clean virtual environment
+python -m venv .venv
 
-# 3. Backend
-cd backend
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
+# Activate the virtual environment
+# For Windows:
+.venv\Scripts\activate
+# For Mac/Linux:
+source .venv/bin/activate
 
-# 4. Build the knowledge base (one-time, takes a while)
-cd ..
-python -m backend.scripts.ingest
+# Install the required libraries
+pip install -r backend/requirements.txt
+pip install streamlit requests
 
-# 5. Start the backend
-uvicorn backend.app.main:app --reload --port 8000
+### 4. Run the Application
 
-# 6. In a NEW terminal — frontend
-cd frontend
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-streamlit run app.py
-```
+Make sure your virtual environment (`.venv`) is activated in both!
 
-Open <http://localhost:8501>. Backend docs at <http://localhost:8000/docs>.
+**Terminal 1: Start the Backend API**
+```bash
+# For Windows PowerShell:
+$env:PYTHONPATH="." ; python -m uvicorn backend.app.main:app --reload --port 8000
 
-## Repository layout
+# For Mac/Linux:
+# PYTHONPATH=. uvicorn backend.app.main:app --reload --port 8000
 
-```
-telemed-AI/
-├── GUIDE.md           # ← start here
-├── README.md
-├── backend/           # FastAPI + GraphRAG service
-│   ├── app/
-│   │   ├── api/       # HTTP routes
-│   │   ├── services/  # ML / retrieval logic
-│   │   └── ingestion/ # one-time data pipeline
-│   └── scripts/       # ingest.py
-├── frontend/          # Streamlit UI
-└── data/              # gitignored — raw XML, chroma, graph pickle
-```
-
-## Architecture
-
-```
-User → Streamlit (frontend, :8501)
-         ↓ HTTP POST /chat
-       FastAPI (backend, :8000)
-         ↓
-       GraphRAG service
-         ├→ Entity extractor → Ollama
-         ├→ NetworkX graph traversal
-         ├→ Chroma vector search
-         └→ Triage prompt → Ollama → answer + sources
-```
-
-See [GUIDE.md §7](./GUIDE.md#7-system-architecture) for the full mermaid diagram.
-
-## Contributing
-
-Open-source learning project. PRs welcome — open an issue first, branch off `main`, request a review.
+**Terminal 2: Start the Streamlit Frontend**
+```bash
+streamlit run frontend/app.py
+The application will automatically open in your browser at http://localhost:8501.
