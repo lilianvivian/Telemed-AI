@@ -18,8 +18,10 @@ from rapidfuzz import fuzz, process
 from backend.app.config import GRAPH_PICKLE, NODE_TYPES, EDGE_TYPES
 
 
-def normalise(name: str) -> str:
-    """Normalise entity name: lower, strip, collapse whitespace."""
+def normalise(name):
+    # Defensive check: if name is None, empty, or not a string, return an empty string
+    if not name or not isinstance(name, str):
+        return ""
     return " ".join(name.lower().split())
 
 

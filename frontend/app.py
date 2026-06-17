@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
-TIMEOUT = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "120"))
+TIMEOUT = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "300"))
 
 
 # ---------------------------------------------------------------------------

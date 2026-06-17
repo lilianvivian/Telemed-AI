@@ -31,11 +31,13 @@ def build_graph_from_chunks(
     g = new_graph()
     failed = 0
 
-    for c in tqdm(chunks, desc="extracting", unit="chunk"):
+    # Wrap tqdm in enumerate so we can count iterations (i)
+    for i, c in enumerate(tqdm(chunks, desc="extracting", unit="chunk")):
         chunk_id = c.metadata.get("chunk_id", "")
         try:
             ext = extract_from_chunk(c.page_content)
-        except Exception:
+        except Exception as e:
+            print(f"\nCRASH REASON: {e}")
             failed += 1
             continue
 
@@ -49,12 +51,22 @@ def build_graph_from_chunks(
         for r in ext["relations"]:
             src = normalise(r.get("source", ""))
             dst = normalise(r.get("target", ""))
-            if src in present and dst in present:
-                add_relation(g, src, r["relation"], dst, chunk_id)
+            if src and dst and src in present and dst in present:
+              add_relation(g, src, r.get("relation", "RELATED_TO"), dst, chunk_id)
+              
+        # -------------------------------------------------------------
+        # CONTINUOUS DISK BACKUP: Save the graph state every 100 chunks
+        # This ensures the Hugging Face uploader actually has a physical 
+        # file to upload if the cloud machine is terminated!
+        # -------------------------------------------------------------
+        if i > 0 and i % 100 == 0:
+            save_graph(g)
 
     print(
         f"Graph built: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges. "
         f"Failed extractions: {failed}/{len(chunks)}."
     )
+    
+    # Final save to capture the last remaining chunks
     save_graph(g)
     return g

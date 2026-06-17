@@ -15,7 +15,7 @@ GRAPH_PICKLE = GRAPH_DIR / "kg.pickle"
 CLEAN_JSONL = DATA_DIR / "medlineplus_clean.jsonl"
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-LLM_MODEL = os.getenv("LLM_MODEL", "llama3.1:8b")
+LLM_MODEL = os.getenv("LLM_MODEL", "llama3.2")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
 
 CHUNK_SIZE = 800

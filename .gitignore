@@ -1,15 +1,46 @@
+# ========================
+# Environments & Secrets
+# ========================
+.env
+**/.env
+.env.*
 .venv/
 venv/
 **/.venv/
+env/
+.streamlit/secrets.toml
+
+# ========================
+# Python Artifacts
+# ========================
 __pycache__/
 **/__pycache__/
 *.pyc
-.env
-**/.env
-.ipynb_checkpoints/
-.streamlit/secrets.toml
+*.pyo
+*.pyd
+
+# ========================
+# Data & Databases (CRITICAL)
+# ========================
+data/
+chroma/
+backend/chroma/
+*.db
+*.sqlite3
+
+# ========================
+# Logs
+# ========================
+*.log
+ollama.log
+
+# ========================
+# IDEs, OS & Tools
+# ========================
 .DS_Store
-.pytest_cache/
+Thumbs.db
 .vscode/
 .idea/
 .claude/
+.ipynb_checkpoints/
+.pytest_cache/
